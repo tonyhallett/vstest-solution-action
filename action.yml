@@ -1,11 +1,16 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'vstest-solution-action'
+description: 'Runs vstest for all projects in solution that match regex'
+author: 'tony hallett'
 inputs:
-  milliseconds: # change this
-    required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  solution:
+    required: false
+    description: 'the solution to parse.  If does not exist is relative to github_workspace'
+  testNameRegex:
+    required: false
+    description: 'determines if a project is a test project.  defaults to /test/i'
+  configuration:
+    required: false
+    description: 'one of Find/Debug/Release - default is find either Debug or Release in Bin of proj file containing folder'
 runs:
   using: 'node12'
   main: 'dist/index.js'
