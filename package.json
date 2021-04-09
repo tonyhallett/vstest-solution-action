@@ -1,37 +1,38 @@
 {
-  "name": "typescript-action",
-  "version": "0.0.0",
-  "private": true,
-  "description": "TypeScript template action",
+  "name": "vstest-solution-action",
+  "version": "1.0.0",
+  "description": "Run vstest on all matching test projects in solution",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
+    "prebuild": "npm run delete",
+    "delete": "del-cli --force ./dist",
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
     "package": "ncc build --source-map --license licenses.txt",
-    "test": "jest",
-    "all": "npm run build && npm run format && npm run lint && npm run package && npm test"
+    "all": "npm run build && npm run format && npm run lint && npm run package"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/tonyhallett/vstest-solution-action.git"
   },
   "keywords": [
     "actions",
     "node",
-    "setup"
+    "vstest"
   ],
-  "author": "",
+  "author": "tony hallett",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.6"
+    "@tonyhallett/github-actions": "^1.2.1"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
     "@types/node": "^14.14.9",
     "@typescript-eslint/parser": "^4.8.1",
     "@vercel/ncc": "^0.25.1",
+    "del-cli": "^3.0.1",
     "eslint": "^7.17.0",
     "eslint-plugin-github": "^4.1.1",
     "eslint-plugin-jest": "^24.1.3",
