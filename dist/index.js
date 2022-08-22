@@ -5848,6 +5848,7 @@ const fs = __importStar(__webpack_require__(5747));
 const path = __importStar(__webpack_require__(5622));
 const path_1 = __webpack_require__(5622);
 const helpers_1 = __webpack_require__(4450);
+const core = __importStar(__webpack_require__(2186));
 function getProjectDlls(projectFolders) {
     let projectDlls = [];
     const configuration = helpers_1.getStringInput('configuration', {
@@ -5857,6 +5858,7 @@ function getProjectDlls(projectFolders) {
         let thisProjectDlls = [];
         switch (configuration) {
             case 'find':
+                core.debug(`finding for ${projectFolder.name}`);
                 thisProjectDlls = findDlls(projectFolder);
                 break;
             case 'debug':
@@ -5893,12 +5895,15 @@ function getDlls(projectFolder, configuration) {
     const nonMultiTargetedPath = getDll(projectFolder, configuration);
     const nonMultiTargetedExists = fs.existsSync(nonMultiTargetedPath);
     if (nonMultiTargetedExists) {
+        core.debug(`found non multi-targeted - ${nonMultiTargetedPath}`);
         return [nonMultiTargetedPath];
     }
     const dlls = [];
     const projectFolderPath = projectFolder.path;
     const binConfigFolderPath = getBinConfigFolder(projectFolderPath, configuration);
+    core.debug(`bin folder path - ${binConfigFolderPath}`);
     if (fs.existsSync(binConfigFolderPath)) {
+        core.debug('checking framework folders');
         const fes = fs.readdirSync(binConfigFolderPath, { withFileTypes: true });
         for (const fe of fes) {
             if (fe.isDirectory()) {
@@ -5907,8 +5912,14 @@ function getDlls(projectFolder, configuration) {
                 if (fs.existsSync(possibleMultiTargetedDllPath)) {
                     dlls.push(possibleMultiTargetedDllPath);
                 }
+                else {
+                    core.debug(`could not find ${possibleMultiTargetedDllPath}`);
+                }
             }
         }
+    }
+    else {
+        core.debug(`bin folder does not exist`);
     }
     return dlls;
 }
