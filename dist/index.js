@@ -4876,6 +4876,159 @@ exports.isPlainObject = isPlainObject;
 
 /***/ }),
 
+/***/ 5534:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.addCommentToPullAndIssues = void 0;
+const useOctokit_1 = __webpack_require__(9502);
+const core = __importStar(__webpack_require__(2186));
+const inputHelpers_1 = __webpack_require__(4684);
+const getPullRequestIssuesActionWorker_1 = __webpack_require__(488);
+const github_1 = __webpack_require__(5438);
+function addCommentToPullAndIssues(pullRequest, commentStr) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield useOctokit_1.useOctokit((octokit) => __awaiter(this, void 0, void 0, function* () {
+            const addTo = core.getInput('addTo', { required: true }).toLowerCase();
+            let issueNumbers = [];
+            if (addTo === 'pull' || addTo === 'pullandissues') {
+                issueNumbers.push(pullRequest.number);
+            }
+            if (addTo === 'issues' || addTo === 'pullandissues') {
+                inputHelpers_1.setInput('pullRequest', JSON.stringify({ pull_request: pullRequest }));
+                issueNumbers = issueNumbers.concat(yield getPullRequestIssuesActionWorker_1.getPullRequestIssuesActionWorker());
+            }
+            const commentIds = [];
+            for (const issueNumber of issueNumbers) {
+                const { data: comment } = yield octokit.issues.createComment(Object.assign(Object.assign({}, github_1.context.repo), { issue_number: issueNumber, body: commentStr }));
+                commentIds.push(comment.id);
+                core.info(`Created comment id '${comment.id}' on issue '${issueNumber}'.`);
+            }
+            core.setOutput('commentIds', commentIds);
+        }));
+    });
+}
+exports.addCommentToPullAndIssues = addCommentToPullAndIssues;
+
+
+/***/ }),
+
+/***/ 2999:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.addCommentToPullAndIssuesFromPushAction = void 0;
+const __1 = __webpack_require__(5770);
+const helpers_1 = __webpack_require__(4450);
+const github = __importStar(__webpack_require__(5438));
+const core = __importStar(__webpack_require__(2186));
+const addCommentToPullAndIssues_1 = __webpack_require__(5534);
+function addCommentToPullAndIssuesFromPushAction() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return __1.trySetFailedAsync(() => __awaiter(this, void 0, void 0, function* () {
+            yield helpers_1.useOctokit((octokit) => __awaiter(this, void 0, void 0, function* () {
+                var _a;
+                const pushPayload = github.context
+                    .payload;
+                const commitMessage = (_a = pushPayload.head_commit) === null || _a === void 0 ? void 0 : _a.message;
+                if (commitMessage) {
+                    const pullRequest = yield __1.getPullRequestFromCommitMessage(octokit, commitMessage);
+                    addCommentToPullAndIssues_1.addCommentToPullAndIssues(pullRequest, core.getInput('comment'));
+                }
+                else {
+                    throw new Error('no commit message');
+                }
+            }));
+        }));
+    });
+}
+exports.addCommentToPullAndIssuesFromPushAction = addCommentToPullAndIssuesFromPushAction;
+
+
+/***/ }),
+
+/***/ 7847:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(5534), exports);
+__exportStar(__webpack_require__(2999), exports);
+
+
+/***/ }),
+
 /***/ 5511:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -5647,6 +5800,7 @@ __exportStar(__webpack_require__(8702), exports);
 __exportStar(__webpack_require__(4450), exports);
 __exportStar(__webpack_require__(6496), exports);
 __exportStar(__webpack_require__(2419), exports);
+__exportStar(__webpack_require__(7847), exports);
 
 
 /***/ }),
@@ -5692,57 +5846,74 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getProjectDlls = void 0;
 const fs = __importStar(__webpack_require__(5747));
 const path = __importStar(__webpack_require__(5622));
+const path_1 = __webpack_require__(5622);
 const helpers_1 = __webpack_require__(4450);
 function getProjectDlls(projectFolders) {
-    const projectDlls = [];
+    let projectDlls = [];
     const configuration = helpers_1.getStringInput('configuration', {
         defaultValue: 'find'
     }).toLowerCase();
     for (const projectFolder of projectFolders) {
-        let projectDll;
-        let releaseDll;
-        let debugDll;
+        let thisProjectDlls = [];
         switch (configuration) {
             case 'find':
-                releaseDll = getDll(projectFolder, 'Release');
-                if (!fs.existsSync(releaseDll)) {
-                    debugDll = getDll(projectFolder, 'Debug');
-                    if (fs.existsSync(debugDll)) {
-                        projectDll = debugDll;
-                    }
-                }
-                else {
-                    projectDll = releaseDll;
-                }
+                thisProjectDlls = findDlls(projectFolder);
                 break;
             case 'debug':
-                debugDll = getDebugDll(projectFolder);
-                if (fs.existsSync(debugDll)) {
-                    projectDll = debugDll;
-                }
+                thisProjectDlls = getDlls(projectFolder, 'Debug');
                 break;
             case 'release':
-                releaseDll = getReleaseDll(projectFolder);
-                if (fs.existsSync(releaseDll)) {
-                    projectDll = releaseDll;
-                }
+                thisProjectDlls = getDlls(projectFolder, 'Release');
                 break;
             default:
                 throw new Error('unsupported configuration input');
         }
-        if (projectDll === undefined) {
+        if (thisProjectDlls.length === 0) {
             throw new Error(`cannot find ${projectFolder.name} with configuration ${configuration}`);
         }
-        projectDlls.push(projectDll);
+        projectDlls = projectDlls.concat(thisProjectDlls);
     }
     return projectDlls;
 }
 exports.getProjectDlls = getProjectDlls;
-function getReleaseDll(projectFolder) {
-    return getDll(projectFolder, 'Release');
+function findDlls(projectFolder) {
+    let dlls = getDlls(projectFolder, 'Release');
+    if (dlls.length === 0) {
+        dlls = getDlls(projectFolder, 'Debug');
+    }
+    return dlls;
 }
-function getDebugDll(projectFolder) {
-    return getDll(projectFolder, 'Debug');
+/* function getReleaseDll(projectFolder: TestProjectFolder): string {
+  return getDll(projectFolder, 'Release')
+}
+function getDebugDll(projectFolder: TestProjectFolder): string {
+  return getDll(projectFolder, 'Debug')
+} */
+function getDlls(projectFolder, configuration) {
+    const nonMultiTargetedPath = getDll(projectFolder, configuration);
+    const nonMultiTargetedExists = fs.existsSync(nonMultiTargetedPath);
+    if (nonMultiTargetedExists) {
+        return [nonMultiTargetedPath];
+    }
+    const dlls = [];
+    const projectFolderPath = projectFolder.path;
+    const binConfigFolderPath = getBinConfigFolder(projectFolderPath, configuration);
+    if (fs.existsSync(binConfigFolderPath)) {
+        const fes = fs.readdirSync(binConfigFolderPath, { withFileTypes: true });
+        for (const fe of fes) {
+            if (fe.isDirectory()) {
+                const possibleMultiTargetedDirectory = path_1.resolve(binConfigFolderPath, fe.name);
+                const possibleMultiTargetedDllPath = path.join(possibleMultiTargetedDirectory, `${projectFolder.name}.dll`);
+                if (fs.existsSync(possibleMultiTargetedDllPath)) {
+                    dlls.push(possibleMultiTargetedDllPath);
+                }
+            }
+        }
+    }
+    return dlls;
+}
+function getBinConfigFolder(projectFolderPath, configuration) {
+    return path.join(projectFolderPath, 'bin', configuration);
 }
 function getDll(projectFolder, configuration) {
     return path.join(projectFolder.path, 'bin', configuration, `${projectFolder.name}.dll`);
@@ -6151,25 +6322,6 @@ __exportStar(__webpack_require__(7721), exports);
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -6181,14 +6333,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.workflowArtifactsPullRequestCommentAction = void 0;
-const core = __importStar(__webpack_require__(2186));
-const github_1 = __webpack_require__(5438);
 const getWorkflowArtifactsComment_1 = __webpack_require__(8144);
-const useOctokit_1 = __webpack_require__(9502);
 const workflowGetPullRequest_1 = __webpack_require__(9485);
 const tryCatchSetFailed_1 = __webpack_require__(8843);
 const inputHelpers_1 = __webpack_require__(4684);
-const getPullRequestIssuesActionWorker_1 = __webpack_require__(488);
+const addCommentToPullAndIssues_1 = __webpack_require__(5534);
 function workflowArtifactsPullRequestCommentAction() {
     return __awaiter(this, void 0, void 0, function* () {
         return tryCatchSetFailed_1.trySetFailedAsync(() => __awaiter(this, void 0, void 0, function* () {
@@ -6199,24 +6348,7 @@ function workflowArtifactsPullRequestCommentAction() {
             else {
                 const commentStr = yield getWorkflowArtifactsComment_1.getWorkflowArtifactsComment();
                 if (commentStr) {
-                    yield useOctokit_1.useOctokit((octokit) => __awaiter(this, void 0, void 0, function* () {
-                        const addTo = core.getInput('addTo', { required: true }).toLowerCase();
-                        let issueNumbers = [];
-                        if (addTo === 'pull' || addTo === 'pullandissues') {
-                            issueNumbers.push(pullRequest.number);
-                        }
-                        if (addTo === 'issues' || addTo === 'pullandissues') {
-                            inputHelpers_1.setInput('pullRequest', JSON.stringify({ pull_request: pullRequest }));
-                            issueNumbers = issueNumbers.concat(yield getPullRequestIssuesActionWorker_1.getPullRequestIssuesActionWorker());
-                        }
-                        const commentIds = [];
-                        for (const issueNumber of issueNumbers) {
-                            const { data: comment } = yield octokit.issues.createComment(Object.assign(Object.assign({}, github_1.context.repo), { issue_number: issueNumber, body: commentStr }));
-                            commentIds.push(comment.id);
-                            core.info(`Created comment id '${comment.id}' on issue '${issueNumber}'.`);
-                        }
-                        core.setOutput('commentIds', commentIds);
-                    }));
+                    yield addCommentToPullAndIssues_1.addCommentToPullAndIssues(pullRequest, commentStr);
                 }
                 else {
                     const errorNoArtifacts = inputHelpers_1.getBoolInput('errorNoArtifacts', {
@@ -6292,7 +6424,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getPullRequestFromCommitMessage = exports.workflowGetPullRequest = exports.pullStateInputName = void 0;
+exports.getPullRequestNumberFromCommitMessage = exports.getPullRequestFromCommitMessage = exports.workflowGetPullRequest = exports.pullStateInputName = void 0;
 const github = __importStar(__webpack_require__(5438));
 const inputHelpers_1 = __webpack_require__(4684);
 const useOctokit_1 = __webpack_require__(9502);
@@ -6307,7 +6439,7 @@ function workflowGetPullRequest() {
         return yield useOctokit_1.useOctokit((octokit) => __awaiter(this, void 0, void 0, function* () {
             switch (payload.workflow_run.event) {
                 case 'push':
-                    return getPullRequestForPushWorkflow(octokit, payload.workflow_run.head_commit.message);
+                    return getPullRequestFromCommitMessage(octokit, payload.workflow_run.head_commit.message);
                 case 'pull_request':
                     return getPullRequestForPullRequestWorkflow(octokit, payload);
                 default:
@@ -6329,20 +6461,21 @@ function getPullRequestForPullRequestWorkflow(octokit, payload) {
         return openHeadPulls.find(pull => pull.head.sha === headSha);
     });
 }
-function getPullRequestForPushWorkflow(octokit, commitMessage) {
+function getPullRequestFromCommitMessage(octokit, commitMessage) {
     return __awaiter(this, void 0, void 0, function* () {
-        const response = yield octokit.pulls.get(Object.assign(Object.assign({}, github.context.repo), { pull_number: getPullRequestFromCommitMessage(commitMessage) }));
+        const response = yield octokit.pulls.get(Object.assign(Object.assign({}, github.context.repo), { pull_number: getPullRequestNumberFromCommitMessage(commitMessage) }));
         return response.data;
     });
 }
-function getPullRequestFromCommitMessage(commitMessage) {
+exports.getPullRequestFromCommitMessage = getPullRequestFromCommitMessage;
+function getPullRequestNumberFromCommitMessage(commitMessage) {
     const matches = /#([0-9]*)/.exec(commitMessage);
     if (matches) {
         return Number(matches[1]);
     }
     throw new Error('commit message does not match');
 }
-exports.getPullRequestFromCommitMessage = getPullRequestFromCommitMessage;
+exports.getPullRequestNumberFromCommitMessage = getPullRequestNumberFromCommitMessage;
 function getPullState() {
     const pullState = inputHelpers_1.getStringInput(exports.pullStateInputName, {
         defaultValue: 'all'
@@ -6399,22 +6532,28 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.workflowRunConclusionDispatchAction = void 0;
 const core = __importStar(__webpack_require__(2186));
 const github = __importStar(__webpack_require__(5438));
+const helpers_1 = __webpack_require__(4450);
 const tryCatchSetFailed_1 = __webpack_require__(8843);
 const useOctokit_1 = __webpack_require__(9502);
 /*
   For use in a workflow run.  Create a dispatch event to be used in
-  a repository_dispatch workflow.  Event is `${workflowName} - ${conclusion}`
+  a repository_dispatch workflow.  Event is `${workflowName} - ${event}- ${conclusion}`
   and client_payload is the workflow run payload.
   Useful for finer control of workflow run execution - instead of completed/requested
+  The event part is optional - set input eventNameInEventType to true
 */
 function workflowRunConclusionDispatchAction() {
     return __awaiter(this, void 0, void 0, function* () {
         return tryCatchSetFailed_1.trySetFailedAsync(() => __awaiter(this, void 0, void 0, function* () {
             const payload = github.context.payload;
+            let event = '';
+            if (helpers_1.getBoolInput('eventNameInEventType')) {
+                event = ` - ${payload.workflow_run.event}`;
+            }
             const conclusion = payload.workflow_run.conclusion;
             const workflowName = payload.workflow.name;
             yield useOctokit_1.useOctokit((octokit) => __awaiter(this, void 0, void 0, function* () {
-                const eventType = `${workflowName} - ${conclusion}`;
+                const eventType = `${workflowName}${event} - ${conclusion}`;
                 core.debug(`event type - ${eventType}`);
                 yield octokit.repos.createDispatchEvent(Object.assign({ event_type: eventType, client_payload: payload }, github.context.repo));
             }), 'GITHUB_PAT', false);

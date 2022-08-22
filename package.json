@@ -25,7 +25,7 @@
   "author": "tony hallett",
   "license": "MIT",
   "dependencies": {
-    "@tonyhallett/github-actions": "^1.4.3"
+    "@tonyhallett/github-actions": "^1.4.4"
   },
   "devDependencies": {
     "@types/jest": "^26.0.22",
