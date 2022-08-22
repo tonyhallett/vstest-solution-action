@@ -5854,6 +5854,7 @@ function getProjectDlls(projectFolders) {
     const configuration = helpers_1.getStringInput('configuration', {
         defaultValue: 'find'
     }).toLowerCase();
+    core.debug(`number of test folders - ${projectFolders.length} `);
     for (const projectFolder of projectFolders) {
         let thisProjectDlls = [];
         switch (configuration) {
