@@ -1,6 +1,6 @@
 {
   "name": "vstest-solution-action",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Run vstest on all matching test projects in solution",
   "main": "lib/main.js",
   "scripts": {
@@ -25,7 +25,7 @@
   "author": "tony hallett",
   "license": "MIT",
   "dependencies": {
-    "@tonyhallett/github-actions": "^1.2.1"
+    "@tonyhallett/github-actions": "^1.4.3"
   },
   "devDependencies": {
     "@types/jest": "^26.0.22",

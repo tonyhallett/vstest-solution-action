@@ -2,6 +2,8 @@
 Runs vstest for all projects in solution that match regex
 Note that it works with convention that the *projectName*.dll exists within the containing proj folder
 bin/*Release|Debug*/*projectName*.dll
+or
+bin/*Release|Debug*/*framework*/*projectName*.dll
 
 # Inputs
 solution - not required, will find the first .sln file in the github workspace
